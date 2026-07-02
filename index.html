@@ -62,13 +62,10 @@
 
     /* ── HEADER ── */
     header {
-      background: linear-gradient(180deg, #e9dab3, #ddc890);
-      border-bottom: 2px solid var(--gold-d);
       padding: 10px 20px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 14px rgba(90,65,30,.28);
     }
 
     .hrow {
@@ -79,13 +76,7 @@
     }
 
     h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.25rem;
-      color: var(--gold-d);
-      text-shadow: 0 1px 0 rgba(255,250,230,.5);
-      white-space: nowrap;
-      letter-spacing: .05em;
-      margin-right: 4px;
+      display: none;
     }
 
     .h-spacer { flex: 1; }
@@ -135,11 +126,12 @@
       background: none; border: none; padding: 4px;
       color: var(--gold-d); cursor: pointer; line-height: 1;
       display: flex; align-items: center; justify-content: center;
-      transition: transform .15s, color .15s;
+      opacity: .6;
+      transition: transform .15s, color .15s, opacity .15s;
     }
     .icon-btn svg { width: 22px; height: 22px; display: block; }
-    .icon-btn:hover { color: var(--gold); transform: scale(1.1); }
-    .icon-btn.active { color: var(--red); }
+    .icon-btn:hover { color: var(--gold); transform: scale(1.1); opacity: 1; }
+    .icon-btn.active { color: var(--red); opacity: 1; }
     .menu-icon-btn svg { width: 30px; height: 30px; }
 
     .menu-wrap { position: relative; }
