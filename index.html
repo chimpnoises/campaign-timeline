@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Timeline</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:    #0f0d0a;
+      --bg-primary: #1a1510;
+      --bg-sec:     #231e17;
+      --bg-card:    #2a231a;
+      --bg-card-h:  #332b1f;
+      --bg-input:   #1e1912;
+      --gold:       #c9a84c;
+      --gold-l:     #e8c97a;
+      --gold-d:     #8b6914;
+      --gold-dim:   #4a3010;
+      --text:       #e8d5b0;
+      --text-m:     #9a8670;
+      --text-d:     #5a4f3f;
+      --border:     #3d3025;
+      --border-g:   #6b4f1a;
+      --red:        #7a1a1a;
+      --red-l:      #c0392b;
+      --green-l:    #27ae60;
+      --purple:     #4a2060;
+      --purple-l:   #8e44ad;
+      --tl-line:    #4a3820;
+      --r:          6px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Crimson Text', Georgia, serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--bg-sec);
+      border-bottom: 2px solid var(--gold-d);
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,.8);
+    }
+
+    .hrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(201,168,76,.3);
+      white-space: nowrap;
+      letter-spacing: .05em;
+      margin-right: 4px;
+    }
+
+    #search {
+      flex: 1;
+      min-width: 140px;
+      max-width: 280px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 11px;
+      border-radius: var(--r);
+      font-family: inherit;
+      font-size: .95rem;
+    }
+    #search:focus { outline: none; border-color: var(--gold-d); }
+    #search::placeholder { color: var(--text-d); }
+
+    #player-select {
+      background: var(--bg-input); border: 1px solid var(--border);
+      color: var(--text); padding: 6px 10px; border-radius: var(--r);
+      font-family: 'Cinzel', serif; font-size: .75rem; max-width: 160px;
+    }
+    #player-select:focus { outline: none; border-color: var(--gold-d); }
+
+    .btn {
+      font-family: 'Cinzel', serif;
+      font-size: .78rem;
+      padding: 6px 13px;
+      border-radius: var(--r);
+      border: 1px solid;
+      cursor: pointer;
+      transition: all .18s;
+      white-space: nowrap;
+      letter-spacing: .03em;
+    }
+    .btn-gold  { background: var(--gold-d); border-color: var(--gold); color: var(--gold-l); }
+    .btn-gold:hover { background: var(--gold); color: var(--bg-deep); }
+    .btn-ghost { background: transparent; border-color: var(--border); color: var(--text-m); }
+    .btn-ghost:hover { border-color: var(--gold-d); color: var(--gold); }
+    .btn-danger { background: var(--red); border-color: var(--red-l); color: #ffaaaa; }
+    .btn-danger:hover { background: var(--red-l); }
+    .btn-sm { padding: 4px 10px; font-size: .72rem; }
+
+    .btn-icon {
+      padding: 6px 9px; font-size: .95rem;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-m); border-radius: var(--r); cursor: pointer;
+      transition: all .18s; line-height: 1;
+    }
+    .btn-icon:hover { border-color: var(--gold-d); color: var(--gold); }
+    .btn-icon.active { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+    .tag-bar {
+      display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+      margin-top: 7px;
+    }
+    .tag-bar-label { font-size: .75rem; color: var(--text-d); font-family: 'Cinzel', serif; }
+
+    .tag-chip {
+      font-size: .72rem; padding: 2px 10px; border-radius: 12px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-m); cursor: pointer; transition: all .18s;
+      font-family: inherit;
+    }
+    .tag-chip:hover { border-color: var(--gold-d); }
+    .tag-chip.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-l); }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1; padding: 36px 24px;
+      max-width: 860px; margin: 0 auto; width: 100%;
+    }
+
+    .empty {
+      text-align: center; padding: 80px 20px; color: var(--text-d);
+    }
+    .empty h2 { font-family: 'Cinzel', serif; color: var(--text-m); margin-bottom: 10px; }
+    .empty p  { font-size: 1.05rem; line-height: 1.6; }
+
+    /* ── TIMELINE ── */
+    #timeline {
+      position: relative;
+      padding-left: 80px;
+    }
+
+    .tl-line {
+      position: absolute;
+      left: 58px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, var(--tl-line) 4%, var(--tl-line) 96%, transparent);
+    }
+
+    .tl-ev {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .tl-year {
+      position: absolute;
+      left: -78px; top: 10px;
+      width: 52px; text-align: right;
+      font-family: 'Cinzel', serif;
+      font-size: .65rem; color: var(--gold-d);
+      letter-spacing: .04em; line-height: 1.2;
+    }
+
+    .tl-dot {
+      position: absolute;
+      left: -22px; top: 14px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-deep);
+      transform: translateX(-50%);
+      z-index: 1;
+      transition: transform .18s;
+    }
+
+    .ev-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all .18s;
+      position: relative;
+    }
+    .ev-card:hover { background: var(--bg-card-h); border-color: var(--border-g); transform: translateX(2px); }
+    .ev-card.secret  { border-left: 3px solid var(--purple-l); }
+    .ev-card.locked  { border-left: 3px solid var(--purple); opacity: .65; cursor: default; }
+
+    .ev-actions {
+      position: absolute; top: 8px; right: 8px;
+      display: none; gap: 5px;
+    }
+    .ev-card:hover .ev-actions { display: flex; }
+
+    .ev-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+    .ev-title {
+      font-family: 'Cinzel', serif; font-size: .95rem; font-weight: 600;
+      color: var(--text); flex: 1; line-height: 1.3;
+    }
+    .ev-date { font-size: .75rem; color: var(--gold-d); font-family: 'Cinzel', serif; white-space: nowrap; }
+    .ev-date.err { color: var(--red-l); }
+
+    .ev-desc {
+      font-size: .9rem; color: var(--text-m); line-height: 1.45;
+      margin-bottom: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .ev-rel-label { font-size: .72rem; color: var(--text-d); font-style: italic; margin-bottom: 5px; }
+
+    .ev-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .ev-tag {
+      font-size: .68rem; padding: 2px 7px;
+      border-radius: 10px; background: var(--bg-sec);
+      color: var(--text-d); border: 1px solid var(--border);
+    }
+    .ev-secret-badge {
+      font-size: .68rem; padding: 2px 7px; border-radius: 10px;
+      background: var(--purple); color: #dbb0ff; border: 1px solid var(--purple-l);
+    }
+
+    .locked-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 4px 0;
+    }
+    .locked-row span { color: var(--text-d); font-style: italic; }
+
+    /* ── MODAL ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .overlay.hide { display: none; }
+
+    .modal {
+      background: var(--bg-sec);
+      border: 1px solid var(--gold-d);
+      border-radius: 10px;
+      width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.85);
+    }
+    .modal-sm { max-width: 380px; }
+
+    .m-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .m-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); }
+    .m-close {
+      background: none; border: none; color: var(--text-d);
+      font-size: 1.2rem; cursor: pointer; padding: 2px 6px; border-radius: 4px;
+    }
+    .m-close:hover { color: var(--text); }
+
+    .m-body   { padding: 20px; }
+    .m-footer {
+      padding: 14px 20px; border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 8px; align-items: center;
+    }
+    .mr-auto { margin-right: auto; }
+
+    /* ── FORM ── */
+    .fg { margin-bottom: 14px; }
+    .fg label, label.fl {
+      display: block;
+      font-family: 'Cinzel', serif; font-size: .75rem;
+      color: var(--gold-d); margin-bottom: 5px; letter-spacing: .04em;
+    }
+
+    input[type=text], input[type=number], input[type=password],
+    textarea, select {
+      width: 100%;
+      background: var(--bg-input); border: 1px solid var(--border);
+      color: var(--text); padding: 8px 11px;
+      border-radius: var(--r);
+      font-family: 'Crimson Text', serif; font-size: .98rem;
+      transition: border-color .18s;
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--gold-d); }
+    textarea { resize: vertical; min-height: 72px; }
+    select option { background: var(--bg-sec); }
+
+    .frow { display: flex; gap: 10px; }
+    .frow .fg { flex: 1; }
+
+    .radio-g { display: flex; gap: 16px; margin-bottom: 8px; }
+    .radio-o { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+    .radio-o input { width: auto; accent-color: var(--gold); cursor: pointer; }
+    .radio-o span { font-family: 'Cinzel', serif; font-size: .8rem; color: var(--text-m); }
+
+    .date-box {
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 12px; margin-top: 6px;
+    }
+
+    .rel-preview { margin-top: 5px; font-size: .82rem; font-style: italic; }
+    .rel-ok  { color: var(--green-l); }
+    .rel-err { color: var(--red-l); }
+
+    .tags-ed { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+    .tag-tog {
+      font-size: .75rem; padding: 3px 11px; border-radius: 12px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-m); cursor: pointer; transition: all .18s; font-family: inherit;
+    }
+    .tag-tog:hover { border-color: var(--gold-d); }
+    .tag-tog.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-l); }
+
+    .new-tag-row { display: flex; gap: 6px; }
+    .new-tag-row input { flex: 1; }
+
+    .color-row { display: flex; gap: 7px; flex-wrap: wrap; }
+    .swatch {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2px solid transparent; cursor: pointer;
+      transition: transform .18s, border-color .18s;
+    }
+    .swatch:hover { transform: scale(1.2); }
+    .swatch.on { border-color: #fff; transform: scale(1.15); }
+
+    .tog-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0;
+    }
+    .tog-label { font-family: 'Cinzel', serif; font-size: .82rem; color: var(--text-m); }
+    .tog-sub   { font-size: .75rem; color: var(--text-d); margin-top: 2px; }
+
+    .sw { position: relative; width: 42px; height: 22px; flex-shrink: 0; }
+    .sw input { display: none; }
+    .sw-sl {
+      position: absolute; inset: 0;
+      background: var(--border); border-radius: 11px;
+      cursor: pointer; transition: background .2s;
+    }
+    .sw-sl::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; left: 3px; top: 3px;
+      background: var(--text-d); border-radius: 50%;
+      transition: transform .2s, background .2s;
+    }
+    .sw input:checked + .sw-sl { background: var(--purple); }
+    .sw input:checked + .sw-sl::before { transform: translateX(20px); background: #dbb0ff; }
+
+    .err-msg { color: var(--red-l); font-size: .78rem; margin-top: 4px; }
+
+    hr.div { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px;
+      background: var(--bg-card); border: 1px solid var(--gold-d);
+      color: var(--text); padding: 10px 16px;
+      border-radius: var(--r); font-size: .88rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.6);
+      z-index: 2000; animation: slideUp .25s ease;
+    }
+    .toast.ok  { border-color: var(--green-l); color: #aaffaa; }
+    .toast.bad { border-color: var(--red-l);   color: #ffaaaa; }
+    @keyframes slideUp {
+      from { transform: translateY(14px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .hide { display: none !important; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold-d); }
+
+    @media(max-width:560px) {
+      main { padding: 24px 12px; }
+      #timeline { padding-left: 64px; }
+      .tl-year { left: -62px; width: 40px; font-size: .6rem; }
+      .tl-line { left: 44px; }
+      .tl-dot  { left: -20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <h1 id="site-title">⚔ Campaign Timeline</h1>
+    <select id="player-select" title="Playing as…">
+      <option value="">— Playing as… —</option>
+    </select>
+    <input type="search" id="search" placeholder="Search events…" autocomplete="off">
+    <button class="btn btn-gold" id="btn-add">+ Add Event</button>
+    <button class="btn-icon" id="btn-dm"    title="DM Mode">🔒</button>
+    <button class="btn-icon" id="btn-cfg"   title="Settings">⚙</button>
+  </div>
+  <div class="tag-bar" id="tag-bar">
+    <span class="tag-bar-label">Filter:</span>
+  </div>
+</header>
+
+<main>
+  <div id="timeline"><div class="tl-line"></div></div>
+  <div id="empty" class="empty hide">
+    <h2>The chronicles await…</h2>
+    <p>No events recorded yet.<br>Click <strong>+ Add Event</strong> to begin your timeline.</p>
+  </div>
+</main>
+
+<!-- EVENT MODAL -->
+<div class="overlay hide" id="ev-overlay">
+<div class="modal" id="ev-modal">
+  <div class="m-head">
+    <span class="m-title" id="ev-modal-title">New Event</span>
+    <button class="m-close" id="ev-close">✕</button>
+  </div>
+  <div class="m-body">
+    <div class="fg">
+      <label for="ev-title">Event Title</label>
+      <input type="text" id="ev-title" placeholder="The Battle of Thornwood…" autocomplete="off">
+    </div>
+    <div class="fg">
+      <label for="ev-desc">Description</label>
+      <textarea id="ev-desc" placeholder="What happened?"></textarea>
+    </div>
+
+    <div class="fg">
+      <label>Date</label>
+      <div class="radio-g">
+        <label class="radio-o"><input type="radio" name="dtype" value="abs" id="d-abs" checked><span>Absolute Year</span></label>
+        <label class="radio-o"><input type="radio" name="dtype" value="rel" id="d-rel"><span>Relative to Event</span></label>
+      </div>
+
+      <div class="date-box" id="abs-box">
+        <div class="frow">
+          <div class="fg"><label for="ev-year">Year</label><input type="number" id="ev-year" placeholder="450"></div>
+          <div class="fg"><label for="ev-month">Month <small style="color:var(--text-d)">(opt)</small></label><input type="number" id="ev-month" placeholder="1–12" min="1" max="12"></div>
+          <div class="fg"><label for="ev-day">Day <small style="color:var(--text-d)">(opt)</small></label><input type="number" id="ev-day" placeholder="1–31" min="1" max="31"></div>
+        </div>
+      </div>
+
+      <div class="date-box hide" id="rel-box">
+        <div class="fg">
+          <label for="ev-ref">Reference Event</label>
+          <select id="ev-ref"><option value="">— select event —</option></select>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label for="ev-dir">Direction</label>
+            <select id="ev-dir"><option value="after">After</option><option value="before">Before</option></select>
+          </div>
+          <div class="fg"><label for="ev-oy">Years</label><input type="number" id="ev-oy" value="0" min="0"></div>
+          <div class="fg"><label for="ev-om">Months</label><input type="number" id="ev-om" value="0" min="0"></div>
+          <div class="fg"><label for="ev-od">Days</label><input type="number" id="ev-od" value="0" min="0"></div>
+        </div>
+        <div class="rel-preview" id="rel-preview"></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label>Tags</label>
+      <div class="tags-ed" id="tags-ed"></div>
+      <div class="new-tag-row">
+        <input type="text" id="new-tag" placeholder="Custom tag…">
+        <button class="btn btn-ghost btn-sm" id="btn-add-tag">Add</button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label>Color</label>
+      <div class="color-row" id="color-row"></div>
+    </div>
+
+    <hr class="div">
+
+    <div class="fg">
+      <label>Visible To</label>
+      <div class="radio-g">
+        <label class="radio-o"><input type="radio" name="vtype" value="all" id="v-all" checked><span>Everyone</span></label>
+        <label class="radio-o"><input type="radio" name="vtype" value="some" id="v-some"><span>Specific Players</span></label>
+      </div>
+      <div class="tags-ed hide" id="visible-ed"></div>
+      <div class="tog-sub" id="visible-empty-note">Add players in Settings first.</div>
+    </div>
+
+    <hr class="div">
+
+    <div class="tog-row">
+      <div>
+        <div class="tog-label">🔒 DM Only (Hidden from Players)</div>
+        <div class="tog-sub">Requires DM password to view</div>
+      </div>
+      <label class="sw"><input type="checkbox" id="ev-secret"><div class="sw-sl"></div></label>
+    </div>
+  </div>
+  <div class="m-footer">
+    <button class="btn btn-danger btn-sm mr-auto hide" id="btn-del">Delete Event</button>
+    <button class="btn btn-ghost" id="ev-cancel">Cancel</button>
+    <button class="btn btn-gold"  id="ev-save">Save Event</button>
+  </div>
+</div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="overlay hide" id="pw-overlay">
+<div class="modal modal-sm">
+  <div class="m-head">
+    <span class="m-title" id="pw-title">Enter DM Password</span>
+    <button class="m-close" id="pw-close">✕</button>
+  </div>
+  <div class="m-body">
+    <p style="color:var(--text-m);margin-bottom:14px;font-size:.95rem" id="pw-desc"></p>
+    <div class="fg">
+      <label for="pw-input" id="pw-lbl">Password</label>
+      <input type="password" id="pw-input" placeholder="Enter password…">
+    </div>
+    <div class="fg hide" id="pw2-group">
+      <label for="pw-input2" id="pw-lbl2">Confirm Password</label>
+      <input type="password" id="pw-input2" placeholder="">
+    </div>
+    <div class="err-msg hide" id="pw-err">Incorrect password.</div>
+  </div>
+  <div class="m-footer">
+    <button class="btn btn-ghost" id="pw-cancel">Cancel</button>
+    <button class="btn btn-gold"  id="pw-ok">Unlock</button>
+  </div>
+</div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay hide" id="cfg-overlay">
+<div class="modal modal-sm">
+  <div class="m-head">
+    <span class="m-title">Settings</span>
+    <button class="m-close" id="cfg-close">✕</button>
+  </div>
+  <div class="m-body">
+    <div class="fg">
+      <label for="cfg-title">Timeline Title</label>
+      <input type="text" id="cfg-title" placeholder="Campaign Timeline">
+    </div>
+    <div class="fg">
+      <label for="cfg-era">Era / Age Name <small style="color:var(--text-d)">(opt)</small></label>
+      <input type="text" id="cfg-era" placeholder="Age of Adventure">
+    </div>
+    <hr class="div">
+    <div class="fg">
+      <label>Players</label>
+      <div class="tags-ed" id="players-ed"></div>
+      <div class="new-tag-row">
+        <input type="text" id="new-player" placeholder="Player name…">
+        <button class="btn btn-ghost btn-sm" id="btn-add-player">Add</button>
+      </div>
+    </div>
+    <hr class="div">
+    <div class="fg">
+      <label>DM Password</label>
+      <button class="btn btn-ghost btn-sm" id="btn-chpw" style="width:100%;margin-bottom:6px">Change / Set Password</button>
+      <button class="btn btn-danger btn-sm" id="btn-rmpw" style="width:100%">Remove Password</button>
+    </div>
+    <hr class="div">
+    <div class="fg">
+      <label>Data</label>
+      <div style="display:flex;gap:7px;margin-bottom:7px">
+        <button class="btn btn-ghost btn-sm" id="btn-export" style="flex:1">Export Backup</button>
+        <button class="btn btn-ghost btn-sm" id="btn-import" style="flex:1">Import Backup</button>
+      </div>
+      <button class="btn btn-gold btn-sm" id="btn-publish" style="width:100%;margin-bottom:6px">⬇ Download data.json (to publish)</button>
+      <button class="btn btn-ghost btn-sm" id="btn-reload-remote" style="width:100%">↻ Reload Published Data</button>
+      <div class="tog-sub" style="margin-top:6px">To publish changes: click <em>Download data.json</em>, replace <code>data.json</code> in your GitHub repo with it, then commit &amp; push. Players click <em>Reload Published Data</em> to pick up updates.</div>
+      <input type="file" id="import-file" accept=".json" style="display:none">
+    </div>
+  </div>
+  <div class="m-footer">
+    <button class="btn btn-ghost" id="cfg-cancel">Cancel</button>
+    <button class="btn btn-gold"  id="cfg-save">Save</button>
+  </div>
+</div>
+</div>
+
+<script>
+'use strict';
+
+// ── CONSTANTS ──────────────────────────────────────────────
+const COLORS = ['#c9a84c','#e07b39','#c0392b','#8e44ad','#2980b9',
+                '#27ae60','#e91e63','#00bcd4','#9e9e9e','#ffffff'];
+
+// ── STATE ─────────────────────────────────────────────────
+let S = {
+  events: [],
+  tags: ['Political','Military','Magic','Divine','Natural','Personal'],
+  players: [],
+  passwordHash: null,
+  unlocked: false,
+  settings: { title: 'Campaign Timeline', era: '' },
+  filterTags: [],
+  filterSearch: '',
+};
+
+let editId      = null;   // currently editing event id (null = new)
+let selTags     = [];
+let selVisible  = [];      // player names this event is restricted to (empty = everyone)
+let selColor    = COLORS[0];
+let pwMode      = 'unlock'; // 'unlock' | 'set' | 'change'
+let currentPlayer = localStorage.getItem('ftl-player') || '';
+
+// ── STORAGE ───────────────────────────────────────────────
+function persist() {
+  localStorage.setItem('ftl', JSON.stringify({
+    events: S.events, tags: S.tags, players: S.players,
+    passwordHash: S.passwordHash, settings: S.settings,
+  }));
+}
+
+function hydrate() {
+  try {
+    const d = JSON.parse(localStorage.getItem('ftl') || 'null');
+    if (!d) return;
+    S.events   = d.events   || [];
+    S.tags     = d.tags     || S.tags;
+    S.players  = d.players  || [];
+    S.passwordHash = d.passwordHash || null;
+    S.settings = { ...S.settings, ...(d.settings || {}) };
+  } catch(e) {}
+}
+
+// Pull the published campaign data from data.json (same repo, served by GitHub Pages).
+// Only auto-applies on a browser that has no local data yet, so it never clobbers
+// in-progress edits. `force` is used by the explicit "Reload Published Data" button.
+async function loadRemote(force = false) {
+  try {
+    const res = await fetch('data.json', { cache: 'no-store' });
+    if (!res.ok) return false;
+    const d = await res.json();
+    if (!Array.isArray(d.events)) return false;
+    S.events   = d.events;
+    S.tags     = d.tags     || S.tags;
+    S.players  = d.players  || [];
+    S.settings = { ...S.settings, ...(d.settings || {}) };
+    if (force) S.passwordHash = d.passwordHash || null;
+    else if (S.passwordHash == null) S.passwordHash = d.passwordHash || null;
+    persist();
+    return true;
+  } catch (e) { return false; }
+}
+
+// ── CRYPTO ────────────────────────────────────────────────
+async function hashPw(pw) {
+  const buf = await crypto.subtle.digest('SHA-256',
+    new TextEncoder().encode(pw + '::ftl-salt::'));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── DATE RESOLUTION ───────────────────────────────────────
+function resolveDate(ev, all, seen = new Set()) {
+  if (ev.date.type === 'abs')
+    return { ok:true, year: ev.date.year||0, month: ev.date.month||0, day: ev.date.day||0 };
+
+  if (seen.has(ev.id)) return { ok:false, err:'circular' };
+  seen.add(ev.id);
+
+  const ref = all.find(e => e.id === ev.date.refId);
+  if (!ref) return { ok:false, err:'missing' };
+
+  const r = resolveDate(ref, all, new Set(seen));
+  if (!r.ok) return r;
+
+  const m = ev.date.dir === 'before' ? -1 : 1;
+  const oy = ev.date.oy||0, om = ev.date.om||0, od = ev.date.od||0;
+
+  let day   = r.day   + m*od;
+  let month = r.month + m*om;
+  let year  = r.year  + m*oy;
+
+  // rough normalization
+  if (month < 1)  { year--; month = 12 + month; }
+  if (month > 12) { year += Math.floor((month-1)/12); month = ((month-1)%12)+1; }
+
+  return { ok:true, year, month, day };
+}
+
+function sortVal(d) { return (d.year||0) + (d.month||0)/100 + (d.day||0)/10000; }
+
+function fmtDate(d) {
+  if (!d || !d.ok) return '?';
+  let s = `Yr ${d.year}`;
+  if (d.month) s += ` M${d.month}`;
+  if (d.day)   s += ` D${d.day}`;
+  return s;
+}
+
+function fmtRelLabel(ev, all) {
+  const ref = all.find(e => e.id === ev.date.refId);
+  if (!ref) return 'Referenced event not found';
+  const parts = [];
+  if (ev.date.oy) parts.push(`${ev.date.oy}y`);
+  if (ev.date.om) parts.push(`${ev.date.om}mo`);
+  if (ev.date.od) parts.push(`${ev.date.od}d`);
+  return (parts.join(' ')||'same time') + ` ${ev.date.dir} "${ref.title}"`;
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+let toastTmr;
+function toast(msg, type='') {
+  clearTimeout(toastTmr);
+  document.querySelector('.toast')?.remove();
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ` ${type}` : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  toastTmr = setTimeout(() => el.remove(), 3000);
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function render() {
+  document.getElementById('site-title').textContent = S.settings.title || 'Campaign Timeline';
+  const dmBtn = document.getElementById('btn-dm');
+  if (S.unlocked) { dmBtn.textContent='🔓'; dmBtn.title='DM Mode active — click to lock'; dmBtn.classList.add('active'); }
+  else            { dmBtn.textContent='🔒'; dmBtn.title='DM Mode'; dmBtn.classList.remove('active'); }
+  renderPlayerSelect();
+  renderTagBar();
+  renderTimeline();
+}
+
+function renderPlayerSelect() {
+  const sel = document.getElementById('player-select');
+  const prev = currentPlayer;
+  sel.innerHTML = '<option value="">— Playing as… —</option>';
+  for (const p of S.players) {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = p;
+    sel.appendChild(o);
+  }
+  sel.value = S.players.includes(prev) ? prev : '';
+  if (sel.value !== prev) { currentPlayer = sel.value; localStorage.setItem('ftl-player', currentPlayer); }
+}
+
+function renderTagBar() {
+  const bar = document.getElementById('tag-bar');
+  bar.innerHTML = '<span class="tag-bar-label">Filter:</span>';
+  for (const t of S.tags) {
+    const c = document.createElement('button');
+    c.className = 'tag-chip' + (S.filterTags.includes(t) ? ' on' : '');
+    c.textContent = t;
+    c.onclick = () => {
+      const i = S.filterTags.indexOf(t);
+      if (i >= 0) S.filterTags.splice(i,1); else S.filterTags.push(t);
+      render();
+    };
+    bar.appendChild(c);
+  }
+}
+
+function renderTimeline() {
+  const tl  = document.getElementById('timeline');
+  const emp = document.getElementById('empty');
+
+  // compute resolved dates for all events
+  const resolved = S.events.map(ev => ({ ev, d: resolveDate(ev, S.events) }));
+
+  // filter
+  const q = S.filterSearch.toLowerCase();
+  let visible = resolved.filter(({ev}) => {
+    if (q && !ev.title.toLowerCase().includes(q) &&
+             !ev.description.toLowerCase().includes(q) &&
+             !ev.tags.some(t=>t.toLowerCase().includes(q))) return false;
+    if (S.filterTags.length && !S.filterTags.some(t=>ev.tags.includes(t))) return false;
+    // player-restricted events are invisible to anyone not on the list (DM always sees them)
+    if (!S.unlocked && ev.visibleTo?.length && !ev.visibleTo.includes(currentPlayer)) return false;
+    return true;
+  });
+
+  // sort
+  visible.sort((a,b) => {
+    if (!a.d.ok && !b.d.ok) return 0;
+    if (!a.d.ok) return 1;
+    if (!b.d.ok) return -1;
+    return sortVal(a.d) - sortVal(b.d);
+  });
+
+  const line = tl.querySelector('.tl-line');
+  tl.innerHTML = '';
+  tl.appendChild(line);
+
+  if (!visible.length) { emp.classList.remove('hide'); return; }
+  emp.classList.add('hide');
+
+  let lastYear = null;
+
+  for (const {ev, d} of visible) {
+    const hidden = ev.isSecret && !S.unlocked;
+    const node   = document.createElement('div');
+    node.className = 'tl-ev';
+
+    // year label — only show when year changes
+    const yr = d.ok ? d.year : null;
+    const yrEl = document.createElement('div');
+    yrEl.className = 'tl-year';
+    if (yr !== null && yr !== lastYear) {
+      yrEl.textContent = yr;
+      lastYear = yr;
+    }
+    node.appendChild(yrEl);
+
+    // dot
+    const dot = document.createElement('div');
+    dot.className = 'tl-dot';
+    dot.style.background = ev.color || COLORS[0];
+    node.appendChild(dot);
+
+    // card
+    const card = document.createElement('div');
+    if (hidden) {
+      card.className = 'ev-card locked';
+      card.innerHTML = `<div class="locked-row"><span>🔒</span><span>Hidden event — DM eyes only</span></div>`;
+    } else {
+      card.className = 'ev-card' + (ev.isSecret ? ' secret' : '');
+      card.innerHTML = buildCardHTML(ev, d);
+      card.querySelector('.ev-edit')?.addEventListener('click', e => { e.stopPropagation(); openEdit(ev.id); });
+      card.addEventListener('click', () => openEdit(ev.id));
+    }
+
+    node.appendChild(card);
+    tl.appendChild(node);
+  }
+}
+
+function buildCardHTML(ev, d) {
+  const dateStr = d.ok ? fmtDate(d) : '?';
+  const dateClass = d.ok ? 'ev-date' : 'ev-date err';
+  const dateTitle = !d.ok ? (d.err==='circular'?'Circular reference':'Referenced event not found') : '';
+
+  const relLine = ev.date.type==='rel'
+    ? `<div class="ev-rel-label">↳ ${escHtml(fmtRelLabel(ev, S.events))}</div>`
+    : '';
+
+  const tags = ev.tags.map(t=>`<span class="ev-tag">${escHtml(t)}</span>`).join('');
+  const secBadge = ev.isSecret ? `<span class="ev-secret-badge">🔒 DM Only</span>` : '';
+  const visBadge = (S.unlocked && ev.visibleTo?.length)
+    ? `<span class="ev-secret-badge" title="Only visible to these players">👥 ${escHtml(ev.visibleTo.join(', '))}</span>` : '';
+
+  return `
+    <div class="ev-actions">
+      <button class="btn btn-ghost btn-sm ev-edit">Edit</button>
+    </div>
+    <div class="ev-head">
+      <div class="ev-title">${escHtml(ev.title||'Untitled')}</div>
+      <div class="${dateClass}" title="${dateTitle}">${escHtml(dateStr)}</div>
+    </div>
+    ${ev.description ? `<div class="ev-desc">${escHtml(ev.description)}</div>` : ''}
+    ${relLine}
+    ${(ev.tags.length||ev.isSecret||visBadge) ? `<div class="ev-tags">${secBadge}${visBadge}${tags}</div>` : ''}
+  `;
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── TAGS EDITOR ───────────────────────────────────────────
+function renderTagsEd() {
+  const c = document.getElementById('tags-ed');
+  c.innerHTML = '';
+  for (const t of S.tags) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tag-tog' + (selTags.includes(t)?' on':'');
+    b.textContent = t;
+    b.onclick = () => {
+      const i = selTags.indexOf(t);
+      if (i>=0) selTags.splice(i,1); else selTags.push(t);
+      b.classList.toggle('on', selTags.includes(t));
+    };
+    c.appendChild(b);
+  }
+}
+
+function renderVisibleEd() {
+  const c = document.getElementById('visible-ed');
+  const note = document.getElementById('visible-empty-note');
+  c.innerHTML = '';
+  if (!S.players.length) { note.classList.remove('hide'); return; }
+  note.classList.add('hide');
+  for (const p of S.players) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tag-tog' + (selVisible.includes(p)?' on':'');
+    b.textContent = p;
+    b.onclick = () => {
+      const i = selVisible.indexOf(p);
+      if (i>=0) selVisible.splice(i,1); else selVisible.push(p);
+      b.classList.toggle('on', selVisible.includes(p));
+    };
+    c.appendChild(b);
+  }
+}
+
+// ── PLAYERS EDITOR (Settings) ──────────────────────────────
+function renderPlayersEd() {
+  const c = document.getElementById('players-ed');
+  c.innerHTML = '';
+  for (const p of S.players) {
+    const chip = document.createElement('span');
+    chip.className = 'tag-chip on';
+    chip.style.display = 'inline-flex'; chip.style.alignItems = 'center'; chip.style.gap = '6px';
+    chip.innerHTML = `${escHtml(p)} <span style="cursor:pointer;font-weight:bold" title="Remove">✕</span>`;
+    chip.querySelector('span').onclick = () => {
+      S.players = S.players.filter(x => x !== p);
+      persist(); renderPlayersEd();
+    };
+    c.appendChild(chip);
+  }
+}
+
+function renderColors() {
+  const c = document.getElementById('color-row');
+  c.innerHTML = '';
+  for (const col of COLORS) {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (col===selColor?' on':'');
+    s.style.background = col;
+    s.title = col;
+    s.onclick = () => {
+      selColor = col;
+      document.querySelectorAll('.swatch').forEach(x => x.classList.toggle('on', x.style.background===col));
+    };
+    c.appendChild(s);
+  }
+}
+
+function populateRefSelect(excludeId) {
+  const sel = document.getElementById('ev-ref');
+  sel.innerHTML = '<option value="">— select event —</option>';
+  for (const ev of S.events) {
+    if (ev.id === excludeId) continue;
+    const o = document.createElement('option');
+    o.value = ev.id; o.textContent = ev.title || 'Untitled';
+    sel.appendChild(o);
+  }
+}
+
+function updateRelPreview() {
+  const el  = document.getElementById('rel-preview');
+  const ref = document.getElementById('ev-ref').value;
+  if (!ref) { el.textContent=''; return; }
+  const tmp = {
+    id: '__tmp__',
+    date: {
+      type:'rel', refId: ref,
+      dir: document.getElementById('ev-dir').value,
+      oy: +document.getElementById('ev-oy').value||0,
+      om: +document.getElementById('ev-om').value||0,
+      od: +document.getElementById('ev-od').value||0,
+    }
+  };
+  const r = resolveDate(tmp, S.events);
+  if (r.ok) { el.className='rel-preview rel-ok'; el.textContent=`→ ${fmtDate(r)}`; }
+  else       { el.className='rel-preview rel-err'; el.textContent=`→ ${r.err==='circular'?'Circular reference!':'Cannot resolve'}`;  }
+}
+
+// ── EVENT MODAL ───────────────────────────────────────────
+function openAdd() {
+  editId     = null;
+  selTags    = [];
+  selVisible = [];
+  selColor   = COLORS[0];
+  document.getElementById('ev-modal-title').textContent = 'New Event';
+  document.getElementById('ev-title').value   = '';
+  document.getElementById('ev-desc').value    = '';
+  document.getElementById('ev-year').value    = '';
+  document.getElementById('ev-month').value   = '';
+  document.getElementById('ev-day').value     = '';
+  document.getElementById('ev-secret').checked = false;
+  document.getElementById('btn-del').classList.add('hide');
+  document.getElementById('d-abs').checked = true;
+  document.getElementById('abs-box').classList.remove('hide');
+  document.getElementById('rel-box').classList.add('hide');
+  document.getElementById('rel-preview').textContent = '';
+  document.getElementById('v-all').checked = true;
+  document.getElementById('visible-ed').classList.add('hide');
+  populateRefSelect(null);
+  renderTagsEd();
+  renderVisibleEd();
+  renderColors();
+  document.getElementById('ev-overlay').classList.remove('hide');
+  document.getElementById('ev-title').focus();
+}
+
+function openEdit(id) {
+  const ev = S.events.find(e=>e.id===id);
+  if (!ev) return;
+  if (ev.isSecret && !S.unlocked) { openPw('unlock'); return; }
+
+  editId     = id;
+  selTags    = [...ev.tags];
+  selVisible = [...(ev.visibleTo||[])];
+  selColor   = ev.color || COLORS[0];
+
+  document.getElementById('ev-modal-title').textContent = 'Edit Event';
+  document.getElementById('ev-title').value   = ev.title;
+  document.getElementById('ev-desc').value    = ev.description||'';
+  document.getElementById('ev-secret').checked = ev.isSecret||false;
+  document.getElementById('btn-del').classList.remove('hide');
+  const hasVisRestriction = !!(ev.visibleTo && ev.visibleTo.length);
+  document.getElementById('v-all').checked  = !hasVisRestriction;
+  document.getElementById('v-some').checked = hasVisRestriction;
+  document.getElementById('visible-ed').classList.toggle('hide', !hasVisRestriction);
+
+  if (ev.date.type==='abs') {
+    document.getElementById('d-abs').checked = true;
+    document.getElementById('ev-year').value  = ev.date.year||'';
+    document.getElementById('ev-month').value = ev.date.month||'';
+    document.getElementById('ev-day').value   = ev.date.day||'';
+    document.getElementById('abs-box').classList.remove('hide');
+    document.getElementById('rel-box').classList.add('hide');
+  } else {
+    document.getElementById('d-rel').checked = true;
+    document.getElementById('abs-box').classList.add('hide');
+    document.getElementById('rel-box').classList.remove('hide');
+    document.getElementById('ev-dir').value = ev.date.dir||'after';
+    document.getElementById('ev-oy').value  = ev.date.oy||0;
+    document.getElementById('ev-om').value  = ev.date.om||0;
+    document.getElementById('ev-od').value  = ev.date.od||0;
+  }
+
+  populateRefSelect(id);
+  if (ev.date.type==='rel') {
+    document.getElementById('ev-ref').value = ev.date.refId||'';
+    updateRelPreview();
+  }
+
+  renderTagsEd();
+  renderVisibleEd();
+  renderColors();
+  document.getElementById('ev-overlay').classList.remove('hide');
+  document.getElementById('ev-title').focus();
+}
+
+function closeEvModal() {
+  document.getElementById('ev-overlay').classList.add('hide');
+  editId = null;
+}
+
+async function saveEvent() {
+  const title = document.getElementById('ev-title').value.trim();
+  if (!title) { toast('Title is required','bad'); document.getElementById('ev-title').focus(); return; }
+
+  const isRel = document.getElementById('d-rel').checked;
+  let date;
+
+  if (isRel) {
+    const refId = document.getElementById('ev-ref').value;
+    if (!refId) { toast('Select a reference event','bad'); return; }
+    date = {
+      type:'rel', refId,
+      dir: document.getElementById('ev-dir').value,
+      oy: +document.getElementById('ev-oy').value||0,
+      om: +document.getElementById('ev-om').value||0,
+      od: +document.getElementById('ev-od').value||0,
+    };
+  } else {
+    const year = parseInt(document.getElementById('ev-year').value);
+    if (isNaN(year)) { toast('Enter a year','bad'); document.getElementById('ev-year').focus(); return; }
+    date = {
+      type:'abs', year,
+      month: parseInt(document.getElementById('ev-month').value)||0,
+      day:   parseInt(document.getElementById('ev-day').value)||0,
+    };
+  }
+
+  const isVisSome = document.getElementById('v-some').checked;
+
+  const ev = {
+    id:          editId || (Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
+    title, description: document.getElementById('ev-desc').value.trim(),
+    date, tags: [...selTags], color: selColor,
+    isSecret: document.getElementById('ev-secret').checked,
+    visibleTo: isVisSome ? [...selVisible] : [],
+  };
+
+  // circular check
+  if (isRel) {
+    const testAll = [...S.events.filter(e=>e.id!==ev.id), ev];
+    const r = resolveDate(ev, testAll);
+    if (!r.ok && r.err==='circular') { toast('Circular reference detected!','bad'); return; }
+  }
+
+  if (editId) {
+    const i = S.events.findIndex(e=>e.id===editId);
+    if (i>=0) S.events[i]=ev;
+  } else {
+    S.events.push(ev);
+  }
+
+  persist(); closeEvModal(); render();
+  toast(editId ? 'Event updated' : 'Event added','ok');
+}
+
+function deleteEvent() {
+  if (!editId) return;
+  const deps = S.events.filter(e=>e.date.type==='rel'&&e.date.refId===editId);
+  const msg  = deps.length
+    ? `"${deps.map(e=>e.title).join('", "')}" depend on this event — their dates will break. Delete anyway?`
+    : 'Delete this event?';
+  if (!confirm(msg)) return;
+  S.events = S.events.filter(e=>e.id!==editId);
+  persist(); closeEvModal(); render();
+  toast('Event deleted');
+}
+
+// ── PASSWORD MODAL ────────────────────────────────────────
+function openPw(mode) {
+  pwMode = mode;
+  document.getElementById('pw-input').value  = '';
+  document.getElementById('pw-input2').value = '';
+  document.getElementById('pw-err').classList.add('hide');
+
+  const t   = document.getElementById('pw-title');
+  const desc= document.getElementById('pw-desc');
+  const g2  = document.getElementById('pw2-group');
+  const ok  = document.getElementById('pw-ok');
+  const l1  = document.getElementById('pw-lbl');
+  const l2  = document.getElementById('pw-lbl2');
+
+  if (mode==='unlock') {
+    t.textContent='Enter DM Password'; desc.textContent='Enter your DM password to reveal hidden events.';
+    l1.textContent='Password'; g2.classList.add('hide'); ok.textContent='Unlock';
+  } else if (mode==='set') {
+    t.textContent='Set DM Password'; desc.textContent='Create a password to protect secret events. Stored locally only.';
+    l1.textContent='Password'; l2.textContent='Confirm Password'; g2.classList.remove('hide'); ok.textContent='Set Password';
+  } else { // change
+    t.textContent='Change Password'; desc.textContent='Enter your current password, then your new password.';
+    l1.textContent='Current Password'; l2.textContent='New Password'; g2.classList.remove('hide'); ok.textContent='Change';
+  }
+
+  document.getElementById('pw-overlay').classList.remove('hide');
+  document.getElementById('pw-input').focus();
+}
+
+function closePw() { document.getElementById('pw-overlay').classList.add('hide'); }
+
+async function handlePw() {
+  const pw  = document.getElementById('pw-input').value;
+  const pw2 = document.getElementById('pw-input2').value;
+  const err = document.getElementById('pw-err');
+  err.classList.add('hide');
+
+  if (!pw) { err.textContent='Enter a password'; err.classList.remove('hide'); return; }
+
+  if (pwMode==='unlock') {
+    if (await hashPw(pw) === S.passwordHash) {
+      S.unlocked = true; closePw(); render(); toast('DM Mode unlocked','ok');
+    } else {
+      err.textContent='Incorrect password.'; err.classList.remove('hide');
+      document.getElementById('pw-input').value=''; document.getElementById('pw-input').focus();
+    }
+
+  } else if (pwMode==='set') {
+    if (pw !== pw2) { err.textContent='Passwords do not match'; err.classList.remove('hide'); return; }
+    if (pw.length < 4) { err.textContent='Password must be ≥ 4 characters'; err.classList.remove('hide'); return; }
+    S.passwordHash = await hashPw(pw); S.unlocked = true;
+    persist(); closePw(); render(); toast('DM password set','ok');
+
+  } else { // change
+    if (await hashPw(pw) !== S.passwordHash) {
+      err.textContent='Incorrect current password'; err.classList.remove('hide'); return;
+    }
+    if (!pw2||pw2.length<4) { err.textContent='New password must be ≥ 4 characters'; err.classList.remove('hide'); return; }
+    S.passwordHash = await hashPw(pw2);
+    persist(); closePw(); toast('Password changed','ok');
+  }
+}
+
+// ── SETTINGS MODAL ────────────────────────────────────────
+function openCfg() {
+  document.getElementById('cfg-title').value = S.settings.title||'';
+  document.getElementById('cfg-era').value   = S.settings.era||'';
+  renderPlayersEd();
+  document.getElementById('cfg-overlay').classList.remove('hide');
+}
+
+function closeCfg() { document.getElementById('cfg-overlay').classList.add('hide'); }
+
+function saveCfg() {
+  S.settings.title = document.getElementById('cfg-title').value.trim() || 'Campaign Timeline';
+  S.settings.era   = document.getElementById('cfg-era').value.trim();
+  persist(); closeCfg(); render(); toast('Settings saved','ok');
+}
+
+// ── EXPORT / IMPORT ───────────────────────────────────────
+function buildExportPayload() {
+  return {
+    version: 2, events: S.events, tags: S.tags, players: S.players,
+    passwordHash: S.passwordHash, settings: S.settings,
+    exported: new Date().toISOString()
+  };
+}
+
+function downloadJson(obj, filename) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportData() {
+  downloadJson(buildExportPayload(), 'timeline-backup.json');
+  toast('Exported','ok');
+}
+
+function publishData() {
+  downloadJson(buildExportPayload(), 'data.json');
+  toast('Downloaded data.json — commit & push it to your repo to publish','ok');
+}
+
+function importData(file) {
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (!Array.isArray(d.events)) throw new Error();
+      if (!confirm(`Import ${d.events.length} events? This replaces your current timeline.`)) return;
+      S.events   = d.events;
+      S.tags     = d.tags || S.tags;
+      S.players  = d.players || S.players;
+      S.settings = { ...S.settings, ...(d.settings||{}) };
+      persist(); closeCfg(); render(); toast(`Imported ${d.events.length} events`,'ok');
+    } catch { toast('Invalid file','bad'); }
+  };
+  r.readAsText(file);
+}
+
+async function reloadRemote() {
+  if (!confirm('Discard local changes and reload the published data.json from GitHub?')) return;
+  const ok = await loadRemote(true);
+  if (ok) { closeCfg(); render(); toast('Reloaded published data','ok'); }
+  else toast('Could not load data.json (not found, or opened without a web server)','bad');
+}
+
+// ── LISTENERS ─────────────────────────────────────────────
+function initListeners() {
+  // header
+  document.getElementById('btn-add').onclick = openAdd;
+  document.getElementById('btn-cfg').onclick = openCfg;
+  document.getElementById('btn-dm').onclick  = () => {
+    if (S.unlocked) { S.unlocked=false; render(); toast('DM Mode locked'); }
+    else if (!S.passwordHash) openPw('set');
+    else openPw('unlock');
+  };
+  document.getElementById('search').oninput = e => {
+    S.filterSearch = e.target.value.trim(); renderTimeline();
+  };
+  document.getElementById('player-select').onchange = e => {
+    currentPlayer = e.target.value;
+    localStorage.setItem('ftl-player', currentPlayer);
+    renderTimeline();
+  };
+
+  // event modal
+  document.getElementById('ev-close').onclick  = closeEvModal;
+  document.getElementById('ev-cancel').onclick = closeEvModal;
+  document.getElementById('ev-save').onclick   = saveEvent;
+  document.getElementById('btn-del').onclick   = deleteEvent;
+  document.getElementById('ev-overlay').onclick = e => { if(e.target===e.currentTarget) closeEvModal(); };
+
+  // date type switch
+  document.querySelectorAll('input[name=dtype]').forEach(r => {
+    r.onchange = () => {
+      const rel = document.getElementById('d-rel').checked;
+      document.getElementById('abs-box').classList.toggle('hide', rel);
+      document.getElementById('rel-box').classList.toggle('hide', !rel);
+      if (rel) { populateRefSelect(editId); updateRelPreview(); }
+    };
+  });
+
+  // visibility type switch
+  document.querySelectorAll('input[name=vtype]').forEach(r => {
+    r.onchange = () => {
+      document.getElementById('visible-ed').classList.toggle('hide', document.getElementById('v-all').checked);
+    };
+  });
+
+  // relative preview live update
+  ['ev-ref','ev-dir','ev-oy','ev-om','ev-od'].forEach(id => {
+    const el = document.getElementById(id);
+    el.oninput = el.onchange = updateRelPreview;
+  });
+
+  // new tag
+  document.getElementById('btn-add-tag').onclick = () => {
+    const input = document.getElementById('new-tag');
+    const t = input.value.trim();
+    if (!t) return;
+    if (!S.tags.includes(t)) { S.tags.push(t); persist(); renderTagBar(); }
+    if (!selTags.includes(t)) selTags.push(t);
+    input.value = '';
+    renderTagsEd();
+  };
+  document.getElementById('new-tag').onkeydown = e => {
+    if (e.key==='Enter') document.getElementById('btn-add-tag').click();
+  };
+
+  // new player
+  document.getElementById('btn-add-player').onclick = () => {
+    const input = document.getElementById('new-player');
+    const p = input.value.trim();
+    if (!p) return;
+    if (!S.players.includes(p)) { S.players.push(p); persist(); renderPlayersEd(); renderPlayerSelect(); }
+    input.value = '';
+  };
+  document.getElementById('new-player').onkeydown = e => {
+    if (e.key==='Enter') document.getElementById('btn-add-player').click();
+  };
+
+  // password modal
+  document.getElementById('pw-close').onclick  = closePw;
+  document.getElementById('pw-cancel').onclick = closePw;
+  document.getElementById('pw-ok').onclick     = handlePw;
+  document.getElementById('pw-overlay').onclick = e => { if(e.target===e.currentTarget) closePw(); };
+  ['pw-input','pw-input2'].forEach(id => {
+    document.getElementById(id).onkeydown = e => { if(e.key==='Enter') handlePw(); };
+  });
+
+  // settings modal
+  document.getElementById('cfg-close').onclick  = closeCfg;
+  document.getElementById('cfg-cancel').onclick = closeCfg;
+  document.getElementById('cfg-save').onclick   = saveCfg;
+  document.getElementById('cfg-overlay').onclick = e => { if(e.target===e.currentTarget) closeCfg(); };
+  document.getElementById('btn-chpw').onclick   = () => { closeCfg(); openPw(S.passwordHash?'change':'set'); };
+  document.getElementById('btn-rmpw').onclick   = () => {
+    if (!S.passwordHash) { toast('No password set','bad'); return; }
+    if (!S.unlocked) { toast('Unlock DM mode first','bad'); return; }
+    if (!confirm('Remove DM password? Secret events will be unprotected.')) return;
+    S.passwordHash=null; S.unlocked=false; persist(); closeCfg(); render(); toast('Password removed');
+  };
+  document.getElementById('btn-export').onclick = exportData;
+  document.getElementById('btn-import').onclick = () => document.getElementById('import-file').click();
+  document.getElementById('import-file').onchange = e => {
+    if (e.target.files[0]) { importData(e.target.files[0]); e.target.value=''; }
+  };
+  document.getElementById('btn-publish').onclick = publishData;
+  document.getElementById('btn-reload-remote').onclick = reloadRemote;
+
+  // global keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key==='Escape') document.querySelectorAll('.overlay:not(.hide)').forEach(o=>o.classList.add('hide'));
+    if (e.key==='n' && !e.ctrlKey && !e.metaKey && !e.altKey &&
+        !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) openAdd();
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────
+(async function init() {
+  hydrate();
+  initListeners();
+  const isFirstVisit = localStorage.getItem('ftl') === null;
+  if (isFirstVisit) await loadRemote(false);
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "events": [],
+  "tags": ["Political", "Military", "Magic", "Divine", "Natural", "Personal"],
+  "players": [],
+  "passwordHash": null,
+  "settings": { "title": "Campaign Timeline", "era": "" }
+}
