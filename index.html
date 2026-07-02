@@ -567,6 +567,7 @@
         <input type="text" id="new-player" placeholder="Player name…">
         <button class="btn btn-ghost btn-sm" id="btn-add-player">Add</button>
       </div>
+      <div class="tog-sub" style="margin-top:6px">You'll be prompted to set each player's password when you add them. Click 🔑 on a chip to change it later.</div>
     </div>
     <hr class="div">
     <div class="fg">
@@ -617,8 +618,10 @@ let editId      = null;   // currently editing event id (null = new)
 let selTags     = [];
 let selVisible  = [];      // player names this event is restricted to (empty = everyone)
 let selColor    = COLORS[0];
-let pwMode      = 'unlock'; // 'unlock' | 'set' | 'change'
-let currentPlayer = localStorage.getItem('ftl-player') || '';
+// pwMode: 'unlock'|'set'|'change' (DM password) or 'player-unlock'|'player-set' (a player's password)
+let pwMode      = 'unlock';
+let pwTarget    = null;    // player name when pwMode is player-*
+let currentPlayer = '';    // authenticated player identity — resets on reload, like DM mode
 
 // ── STORAGE ───────────────────────────────────────────────
 function persist() {
@@ -628,13 +631,18 @@ function persist() {
   }));
 }
 
+// Normalizes players from the pre-password format (plain name strings) to {name, passwordHash}.
+function normalizePlayers(players) {
+  return (players || []).map(p => typeof p === 'string' ? { name: p, passwordHash: null } : p);
+}
+
 function hydrate() {
   try {
     const d = JSON.parse(localStorage.getItem('ftl') || 'null');
     if (!d) return;
     S.events   = d.events   || [];
     S.tags     = d.tags     || S.tags;
-    S.players  = d.players  || [];
+    S.players  = normalizePlayers(d.players);
     S.passwordHash = d.passwordHash || null;
     S.settings = { ...S.settings, ...(d.settings || {}) };
   } catch(e) {}
@@ -651,7 +659,7 @@ async function loadRemote(force = false) {
     if (!Array.isArray(d.events)) return false;
     S.events   = d.events;
     S.tags     = d.tags     || S.tags;
-    S.players  = d.players  || [];
+    S.players  = normalizePlayers(d.players);
     S.settings = { ...S.settings, ...(d.settings || {}) };
     if (force) S.passwordHash = d.passwordHash || null;
     else if (S.passwordHash == null) S.passwordHash = d.passwordHash || null;
@@ -740,15 +748,13 @@ function render() {
 
 function renderPlayerSelect() {
   const sel = document.getElementById('player-select');
-  const prev = currentPlayer;
   sel.innerHTML = '<option value="">— Playing as… —</option>';
   for (const p of S.players) {
     const o = document.createElement('option');
-    o.value = p; o.textContent = p;
+    o.value = p.name; o.textContent = p.name;
     sel.appendChild(o);
   }
-  sel.value = S.players.includes(prev) ? prev : '';
-  if (sel.value !== prev) { currentPlayer = sel.value; localStorage.setItem('ftl-player', currentPlayer); }
+  sel.value = S.players.some(p => p.name === currentPlayer) ? currentPlayer : '';
 }
 
 function renderTagBar() {
@@ -902,12 +908,12 @@ function renderVisibleEd() {
   for (const p of S.players) {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'tag-tog' + (selVisible.includes(p)?' on':'');
-    b.textContent = p;
+    b.className = 'tag-tog' + (selVisible.includes(p.name)?' on':'');
+    b.textContent = p.name;
     b.onclick = () => {
-      const i = selVisible.indexOf(p);
-      if (i>=0) selVisible.splice(i,1); else selVisible.push(p);
-      b.classList.toggle('on', selVisible.includes(p));
+      const i = selVisible.indexOf(p.name);
+      if (i>=0) selVisible.splice(i,1); else selVisible.push(p.name);
+      b.classList.toggle('on', selVisible.includes(p.name));
     };
     c.appendChild(b);
   }
@@ -921,10 +927,11 @@ function renderPlayersEd() {
     const chip = document.createElement('span');
     chip.className = 'tag-chip on';
     chip.style.display = 'inline-flex'; chip.style.alignItems = 'center'; chip.style.gap = '6px';
-    chip.innerHTML = `${escHtml(p)} <span style="cursor:pointer;font-weight:bold" title="Remove">✕</span>`;
-    chip.querySelector('span').onclick = () => {
-      S.players = S.players.filter(x => x !== p);
-      persist(); renderPlayersEd();
+    chip.innerHTML = `${escHtml(p.name)} <span class="pw-btn" style="cursor:pointer" title="${p.passwordHash?'Change':'Set'} Password">${p.passwordHash?'🔑':'⚠️ set pw'}</span> <span class="rm-btn" style="cursor:pointer;font-weight:bold" title="Remove">✕</span>`;
+    chip.querySelector('.pw-btn').onclick = () => openPw('player-set', p.name);
+    chip.querySelector('.rm-btn').onclick = () => {
+      S.players = S.players.filter(x => x.name !== p.name);
+      persist(); renderPlayersEd(); renderPlayerSelect();
     };
     c.appendChild(chip);
   }
@@ -1127,8 +1134,9 @@ function deleteEvent() {
 }
 
 // ── PASSWORD MODAL ────────────────────────────────────────
-function openPw(mode) {
-  pwMode = mode;
+function openPw(mode, target = null) {
+  pwMode   = mode;
+  pwTarget = target;
   document.getElementById('pw-input').value  = '';
   document.getElementById('pw-input2').value = '';
   document.getElementById('pw-err').classList.add('hide');
@@ -1146,16 +1154,25 @@ function openPw(mode) {
   } else if (mode==='set') {
     t.textContent='Set DM Password'; desc.textContent='Create a password to protect secret events. Stored locally only.';
     l1.textContent='Password'; l2.textContent='Confirm Password'; g2.classList.remove('hide'); ok.textContent='Set Password';
-  } else { // change
+  } else if (mode==='change') {
     t.textContent='Change Password'; desc.textContent='Enter your current password, then your new password.';
     l1.textContent='Current Password'; l2.textContent='New Password'; g2.classList.remove('hide'); ok.textContent='Change';
+  } else if (mode==='player-unlock') {
+    t.textContent=`Password for ${target}`; desc.textContent=`Enter the password ${target} was given.`;
+    l1.textContent='Password'; g2.classList.add('hide'); ok.textContent='Continue';
+  } else { // player-set
+    t.textContent=`Set Password for ${target}`; desc.textContent=`Choose a password for ${target}. You set this yourself since you're setting it up together.`;
+    l1.textContent='Password'; l2.textContent='Confirm Password'; g2.classList.remove('hide'); ok.textContent='Set Password';
   }
 
   document.getElementById('pw-overlay').classList.remove('hide');
   document.getElementById('pw-input').focus();
 }
 
-function closePw() { document.getElementById('pw-overlay').classList.add('hide'); }
+function closePw() {
+  document.getElementById('pw-overlay').classList.add('hide');
+  if (pwMode === 'player-unlock') renderPlayerSelect(); // revert dropdown if they cancelled
+}
 
 async function handlePw() {
   const pw  = document.getElementById('pw-input').value;
@@ -1179,13 +1196,31 @@ async function handlePw() {
     S.passwordHash = await hashPw(pw); S.unlocked = true;
     persist(); closePw(); render(); toast('DM password set','ok');
 
-  } else { // change
+  } else if (pwMode==='change') {
     if (await hashPw(pw) !== S.passwordHash) {
       err.textContent='Incorrect current password'; err.classList.remove('hide'); return;
     }
     if (!pw2||pw2.length<4) { err.textContent='New password must be ≥ 4 characters'; err.classList.remove('hide'); return; }
     S.passwordHash = await hashPw(pw2);
     persist(); closePw(); toast('Password changed','ok');
+
+  } else if (pwMode==='player-unlock') {
+    const p = S.players.find(pl => pl.name === pwTarget);
+    if (p && await hashPw(pw) === p.passwordHash) {
+      currentPlayer = pwTarget;
+      document.getElementById('pw-overlay').classList.add('hide');
+      render(); toast(`Playing as ${pwTarget}`,'ok');
+    } else {
+      err.textContent='Incorrect password.'; err.classList.remove('hide');
+      document.getElementById('pw-input').value=''; document.getElementById('pw-input').focus();
+    }
+
+  } else { // player-set
+    if (pw !== pw2) { err.textContent='Passwords do not match'; err.classList.remove('hide'); return; }
+    if (pw.length < 4) { err.textContent='Password must be ≥ 4 characters'; err.classList.remove('hide'); return; }
+    const p = S.players.find(pl => pl.name === pwTarget);
+    if (p) p.passwordHash = await hashPw(pw);
+    persist(); closePw(); renderPlayersEd(); toast(`Password set for ${pwTarget}`,'ok');
   }
 }
 
@@ -1270,9 +1305,11 @@ function initListeners() {
     S.filterSearch = e.target.value.trim(); renderTimeline();
   };
   document.getElementById('player-select').onchange = e => {
-    currentPlayer = e.target.value;
-    localStorage.setItem('ftl-player', currentPlayer);
-    renderTimeline();
+    const name = e.target.value;
+    if (!name) { currentPlayer = ''; renderTimeline(); return; }
+    const p = S.players.find(pl => pl.name === name);
+    if (p && p.passwordHash) { openPw('player-unlock', name); return; }
+    currentPlayer = name; renderTimeline();
   };
 
   // event modal
@@ -1322,10 +1359,13 @@ function initListeners() {
   // new player
   document.getElementById('btn-add-player').onclick = () => {
     const input = document.getElementById('new-player');
-    const p = input.value.trim();
-    if (!p) return;
-    if (!S.players.includes(p)) { S.players.push(p); persist(); renderPlayersEd(); renderPlayerSelect(); }
+    const name = input.value.trim();
+    if (!name) return;
+    if (S.players.some(p => p.name === name)) { toast('Player already exists','bad'); return; }
+    S.players.push({ name, passwordHash: null });
+    persist(); renderPlayersEd(); renderPlayerSelect();
     input.value = '';
+    openPw('player-set', name);
   };
   document.getElementById('new-player').onkeydown = e => {
     if (e.key==='Enter') document.getElementById('btn-add-player').click();
