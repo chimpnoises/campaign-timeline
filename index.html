@@ -9,27 +9,27 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-deep:    #0f0d0a;
-      --bg-primary: #1a1510;
-      --bg-sec:     #231e17;
-      --bg-card:    #2a231a;
-      --bg-card-h:  #332b1f;
-      --bg-input:   #1e1912;
-      --gold:       #c9a84c;
-      --gold-l:     #e8c97a;
-      --gold-d:     #8b6914;
-      --gold-dim:   #4a3010;
-      --text:       #e8d5b0;
-      --text-m:     #9a8670;
-      --text-d:     #5a4f3f;
-      --border:     #3d3025;
-      --border-g:   #6b4f1a;
-      --red:        #7a1a1a;
-      --red-l:      #c0392b;
-      --green-l:    #27ae60;
-      --purple:     #4a2060;
-      --purple-l:   #8e44ad;
-      --tl-line:    #4a3820;
+      --bg-deep:    #e6d6a8;
+      --bg-primary: #ecdfb8;
+      --bg-sec:     #e8dab0;
+      --bg-card:    #f2e5c0;
+      --bg-card-h:  #f7eed6;
+      --bg-input:   #f5edd8;
+      --gold:       #a8752c;
+      --gold-l:     #c48f3c;
+      --gold-d:     #6b4315;
+      --gold-dim:   #e9d9a6;
+      --text:       #3b2a17;
+      --text-m:     #6b5738;
+      --text-d:     #96835c;
+      --border:     #c7b184;
+      --border-g:   #8a5a1e;
+      --red:        #7a1f1f;
+      --red-l:      #a13a2a;
+      --green-l:    #4c6b1f;
+      --purple:     #4a2f6b;
+      --purple-l:   #7a55a3;
+      --tl-line:    #5c4326;
       --r:          6px;
     }
 
@@ -37,7 +37,13 @@
 
     body {
       font-family: 'Crimson Text', Georgia, serif;
-      background: var(--bg-deep);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(139,105,58,.14), transparent 42%),
+        radial-gradient(circle at 88% 8%,  rgba(139,105,58,.11), transparent 40%),
+        radial-gradient(circle at 65% 95%, rgba(120,90,50,.13), transparent 50%),
+        radial-gradient(circle at 3% 75%,  rgba(139,105,58,.10), transparent 40%),
+        radial-gradient(circle at 95% 60%, rgba(139,105,58,.09), transparent 38%),
+        linear-gradient(160deg, #ecdfb8 0%, #e3d19f 50%, #ecdcac 100%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -46,13 +52,13 @@
 
     /* ── HEADER ── */
     header {
-      background: var(--bg-sec);
+      background: linear-gradient(180deg, #e9dab3, #ddc890);
       border-bottom: 2px solid var(--gold-d);
       padding: 10px 20px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 20px rgba(0,0,0,.8);
+      box-shadow: 0 2px 14px rgba(90,65,30,.28);
     }
 
     .hrow {
@@ -65,17 +71,17 @@
     h1 {
       font-family: 'Cinzel', serif;
       font-size: 1.25rem;
-      color: var(--gold);
-      text-shadow: 0 0 20px rgba(201,168,76,.3);
+      color: var(--gold-d);
+      text-shadow: 0 1px 0 rgba(255,250,230,.5);
       white-space: nowrap;
       letter-spacing: .05em;
       margin-right: 4px;
     }
 
+    .h-spacer { flex: 1; }
+
     #search {
-      flex: 1;
-      min-width: 140px;
-      max-width: 280px;
+      width: 100%;
       background: var(--bg-input);
       border: 1px solid var(--border);
       color: var(--text);
@@ -88,9 +94,10 @@
     #search::placeholder { color: var(--text-d); }
 
     #player-select {
+      width: 100%;
       background: var(--bg-input); border: 1px solid var(--border);
       color: var(--text); padding: 6px 10px; border-radius: var(--r);
-      font-family: 'Cinzel', serif; font-size: .75rem; max-width: 160px;
+      font-family: 'Cinzel', serif; font-size: .75rem;
     }
     #player-select:focus { outline: none; border-color: var(--gold-d); }
 
@@ -105,27 +112,42 @@
       white-space: nowrap;
       letter-spacing: .03em;
     }
-    .btn-gold  { background: var(--gold-d); border-color: var(--gold); color: var(--gold-l); }
-    .btn-gold:hover { background: var(--gold); color: var(--bg-deep); }
+    .btn-gold  { background: var(--gold-d); border-color: var(--gold); color: #fbf3df; }
+    .btn-gold:hover { background: var(--gold); color: #2b1d0d; }
     .btn-ghost { background: transparent; border-color: var(--border); color: var(--text-m); }
-    .btn-ghost:hover { border-color: var(--gold-d); color: var(--gold); }
-    .btn-danger { background: var(--red); border-color: var(--red-l); color: #ffaaaa; }
+    .btn-ghost:hover { border-color: var(--gold-d); color: var(--gold-d); }
+    .btn-danger { background: var(--red); border-color: var(--red-l); color: #ffdcd0; }
     .btn-danger:hover { background: var(--red-l); }
     .btn-sm { padding: 4px 10px; font-size: .72rem; }
 
-    .btn-icon {
-      padding: 6px 9px; font-size: .95rem;
-      background: transparent; border: 1px solid var(--border);
-      color: var(--text-m); border-radius: var(--r); cursor: pointer;
-      transition: all .18s; line-height: 1;
+    /* Bare icon buttons — no button chrome, just an ink-colored glyph */
+    .icon-btn {
+      background: none; border: none; padding: 4px;
+      color: var(--gold-d); cursor: pointer; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .15s, color .15s;
     }
-    .btn-icon:hover { border-color: var(--gold-d); color: var(--gold); }
-    .btn-icon.active { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+    .icon-btn svg { width: 22px; height: 22px; display: block; }
+    .icon-btn:hover { color: var(--gold); transform: scale(1.1); }
+    .icon-btn.active { color: var(--red); }
+    .dragon-btn svg { width: 34px; height: 34px; }
+
+    .menu-wrap { position: relative; }
+    .dragon-menu {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--bg-sec); border: 1px solid var(--border-g);
+      border-radius: var(--r); box-shadow: 0 12px 30px rgba(70,50,20,.35);
+      padding: 14px; width: 240px; z-index: 300;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .dragon-menu.hide { display: none; }
+    .dm-row.hide { display: none; }
 
     .tag-bar {
       display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
       margin-top: 7px;
     }
+    .tag-bar.hide { display: none; }
     .tag-bar-label { font-size: .75rem; color: var(--text-d); font-family: 'Cinzel', serif; }
 
     .tag-chip {
@@ -135,7 +157,7 @@
       font-family: inherit;
     }
     .tag-chip:hover { border-color: var(--gold-d); }
-    .tag-chip.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-l); }
+    .tag-chip.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-d); }
 
     /* ── MAIN ── */
     main {
@@ -160,6 +182,7 @@
       left: 58px; top: 0; bottom: 0;
       width: 2px;
       background: linear-gradient(to bottom, transparent, var(--tl-line) 4%, var(--tl-line) 96%, transparent);
+      opacity: .75;
     }
 
     .tl-ev {
@@ -179,24 +202,27 @@
     .tl-dot {
       position: absolute;
       left: -22px; top: 14px;
-      width: 12px; height: 12px;
-      border-radius: 50%;
+      width: 13px; height: 13px;
+      border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
       border: 2px solid var(--bg-deep);
+      box-shadow: 0 1px 3px rgba(60,40,20,.35);
       transform: translateX(-50%);
       z-index: 1;
       transition: transform .18s;
     }
 
     .ev-card {
-      background: var(--bg-card);
+      background: linear-gradient(165deg, var(--bg-card), #e6d5a3);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 12px 14px;
       cursor: pointer;
-      transition: all .18s;
+      transition: transform .18s, background .18s, border-color .18s;
       position: relative;
+      box-shadow: 1px 3px 8px rgba(90,65,30,.2), inset 0 0 22px rgba(255,252,235,.4);
+      transform: rotate(var(--tilt, 0deg));
     }
-    .ev-card:hover { background: var(--bg-card-h); border-color: var(--border-g); transform: translateX(2px); }
+    .ev-card:hover { background: linear-gradient(165deg, var(--bg-card-h), #eeddab); border-color: var(--border-g); transform: rotate(0deg) translateX(3px); }
     .ev-card.secret  { border-left: 3px solid var(--purple-l); }
     .ev-card.locked  { border-left: 3px solid var(--purple); opacity: .65; cursor: default; }
 
@@ -243,8 +269,8 @@
     /* ── MODAL ── */
     .overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,.72);
-      backdrop-filter: blur(3px);
+      background: rgba(45,32,16,.45);
+      backdrop-filter: blur(2px);
       z-index: 1000;
       display: flex; align-items: center; justify-content: center;
       padding: 20px;
@@ -257,7 +283,7 @@
       border-radius: 10px;
       width: 100%; max-width: 560px;
       max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,.85);
+      box-shadow: 0 20px 50px rgba(70,50,20,.4);
     }
     .modal-sm { max-width: 380px; }
 
@@ -371,11 +397,11 @@
       background: var(--bg-card); border: 1px solid var(--gold-d);
       color: var(--text); padding: 10px 16px;
       border-radius: var(--r); font-size: .88rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,.6);
+      box-shadow: 0 4px 20px rgba(70,50,20,.4);
       z-index: 2000; animation: slideUp .25s ease;
     }
-    .toast.ok  { border-color: var(--green-l); color: #aaffaa; }
-    .toast.bad { border-color: var(--red-l);   color: #ffaaaa; }
+    .toast.ok  { border-color: var(--green-l); color: var(--green-l); }
+    .toast.bad { border-color: var(--red-l);   color: var(--red-l); }
     @keyframes slideUp {
       from { transform: translateY(14px); opacity: 0; }
       to   { transform: translateY(0);    opacity: 1; }
@@ -394,6 +420,7 @@
       .tl-year { left: -62px; width: 40px; font-size: .6rem; }
       .tl-line { left: 44px; }
       .tl-dot  { left: -20px; }
+      .dragon-menu { right: auto; left: 0; width: calc(100vw - 40px); max-width: 280px; }
     }
   </style>
 </head>
@@ -402,15 +429,69 @@
 <header>
   <div class="hrow">
     <h1 id="site-title">⚔ Campaign Timeline</h1>
-    <select id="player-select" title="Playing as…">
-      <option value="">— Playing as… —</option>
-    </select>
-    <input type="search" id="search" placeholder="Search events…" autocomplete="off">
-    <button class="btn btn-gold" id="btn-add">+ Add Event</button>
-    <button class="btn-icon" id="btn-dm"    title="DM Mode">🔒</button>
-    <button class="btn-icon" id="btn-cfg"   title="Settings">⚙</button>
+    <div class="h-spacer"></div>
+    <button class="icon-btn" id="btn-tags" title="Filter by Tag">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M12.5 3H4a1 1 0 0 0-1 1v8.5a1 1 0 0 0 .29.71l9.5 9.5a1 1 0 0 0 1.42 0l7.79-7.79a1 1 0 0 0 0-1.42l-9.5-9.5A1 1 0 0 0 12.5 3Z"/>
+        <circle cx="7.5" cy="7.5" r="1.4" fill="currentColor" stroke="none"/>
+      </svg>
+    </button>
+    <button class="icon-btn" id="btn-add" title="Add Event">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 4c-5 0-11 3-14 9-1.2 2.3-1.6 4.2-1.6 4.2s1.9-.4 4.2-1.6C14.6 12.6 19 8.5 20 4Z"/>
+        <path d="M9.5 14.5 4 20"/>
+        <path d="M12.5 9.5c-1 .3-2 .8-2.7 1.5M15 7c-1 .3-2 .8-2.7 1.5"/>
+        <circle cx="3.4" cy="20.6" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+    </button>
+    <div class="menu-wrap">
+      <button class="icon-btn dragon-btn" id="btn-menu" title="Menu">
+        <svg viewBox="0 0 100 90" fill="currentColor">
+          <path d="M6,60
+                   C10,45 12,38 14,35
+                   C18,25 22,20 28,18
+                   L26,4
+                   L36,20
+                   C46,19 52,20 58,22
+                   L86,26
+                   L68,34
+                   L84,44
+                   L54,42
+                   C48,44 44,48 40,54
+                   L34,50
+                   L30,60
+                   L24,52
+                   L20,64
+                   L14,55
+                   L8,60 Z"/>
+          <circle cx="34" cy="26" r="2.6"/>
+        </svg>
+      </button>
+      <div class="dragon-menu hide" id="dragon-menu">
+        <div class="dm-row">
+          <input type="search" id="search" placeholder="Search events…" autocomplete="off">
+        </div>
+        <div class="dm-row">
+          <select id="player-select" title="Playing as…">
+            <option value="">— Playing as… —</option>
+          </select>
+        </div>
+        <div class="dm-row">
+          <button class="btn btn-ghost btn-sm" id="btn-dm" style="width:100%">🔒 DM Mode</button>
+        </div>
+        <div class="dm-row hide" id="view-as-row">
+          <div class="tog-row">
+            <div class="tog-label" style="font-size:.78rem">View as Player</div>
+            <label class="sw"><input type="checkbox" id="view-as-toggle"><div class="sw-sl"></div></label>
+          </div>
+        </div>
+        <div class="dm-row hide" id="settings-row">
+          <button class="btn btn-ghost btn-sm" id="btn-cfg" style="width:100%">⚙ Settings</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="tag-bar" id="tag-bar">
+  <div class="tag-bar hide" id="tag-bar">
     <span class="tag-bar-label">Filter:</span>
   </div>
 </header>
@@ -419,7 +500,7 @@
   <div id="timeline"><div class="tl-line"></div></div>
   <div id="empty" class="empty hide">
     <h2>The chronicles await…</h2>
-    <p>No events recorded yet.<br>Click <strong>+ Add Event</strong> to begin your timeline.</p>
+    <p>No events recorded yet.<br>Click the <strong>quill</strong> icon to begin your timeline.</p>
   </div>
 </main>
 
@@ -621,7 +702,11 @@ let selColor    = COLORS[0];
 // pwMode: 'unlock'|'set'|'change' (DM password) or 'player-unlock'|'player-set' (a player's password)
 let pwMode      = 'unlock';
 let pwTarget    = null;    // player name when pwMode is player-*
-let currentPlayer = '';    // authenticated player identity — resets on reload, like DM mode
+let currentPlayer   = '';  // authenticated player identity (or DM preview identity)
+let dmViewAsPlayer  = false; // DM's own "preview as player" toggle — resets each reload
+
+// Whether the viewer currently has full DM visibility (not previewing as a player).
+function isDmActive() { return S.unlocked && !dmViewAsPlayer; }
 
 // ── STORAGE ───────────────────────────────────────────────
 function persist() {
@@ -645,6 +730,25 @@ function hydrate() {
     S.players  = normalizePlayers(d.players);
     S.passwordHash = d.passwordHash || null;
     S.settings = { ...S.settings, ...(d.settings || {}) };
+  } catch(e) {}
+}
+
+// Persistent login: remembers who's authenticated on this browser so they don't
+// have to re-enter a password every visit. Kept in its own localStorage key,
+// separate from campaign data, so it's never picked up by export/import/publish.
+function persistAuth() {
+  localStorage.setItem('ftl-auth', JSON.stringify({
+    dm: S.unlocked,
+    player: S.unlocked ? null : (currentPlayer || null),
+  }));
+}
+
+function hydrateAuth() {
+  try {
+    const a = JSON.parse(localStorage.getItem('ftl-auth') || 'null');
+    if (!a) return;
+    S.unlocked   = !!a.dm;
+    currentPlayer = a.player || '';
   } catch(e) {}
 }
 
@@ -739,11 +843,18 @@ function toast(msg, type='') {
 function render() {
   document.getElementById('site-title').textContent = S.settings.title || 'Campaign Timeline';
   const dmBtn = document.getElementById('btn-dm');
-  if (S.unlocked) { dmBtn.textContent='🔓'; dmBtn.title='DM Mode active — click to lock'; dmBtn.classList.add('active'); }
-  else            { dmBtn.textContent='🔒'; dmBtn.title='DM Mode'; dmBtn.classList.remove('active'); }
+  if (S.unlocked) { dmBtn.textContent = dmViewAsPlayer ? '🔓 DM Mode (viewing as player)' : '🔓 DM Mode — click to lock'; dmBtn.classList.add('active'); }
+  else            { dmBtn.textContent = '🔒 DM Mode'; dmBtn.classList.remove('active'); }
+  renderMenuGates();
   renderPlayerSelect();
   renderTagBar();
   renderTimeline();
+}
+
+function renderMenuGates() {
+  document.getElementById('settings-row').classList.toggle('hide', !isDmActive());
+  document.getElementById('view-as-row').classList.toggle('hide', !S.unlocked);
+  document.getElementById('view-as-toggle').checked = dmViewAsPlayer;
 }
 
 function renderPlayerSelect() {
@@ -771,6 +882,7 @@ function renderTagBar() {
     };
     bar.appendChild(c);
   }
+  document.getElementById('btn-tags').classList.toggle('active', S.filterTags.length > 0);
 }
 
 function renderTimeline() {
@@ -787,8 +899,8 @@ function renderTimeline() {
              !ev.description.toLowerCase().includes(q) &&
              !ev.tags.some(t=>t.toLowerCase().includes(q))) return false;
     if (S.filterTags.length && !S.filterTags.some(t=>ev.tags.includes(t))) return false;
-    // player-restricted events are invisible to anyone not on the list (DM always sees them)
-    if (!S.unlocked && ev.visibleTo?.length && !ev.visibleTo.includes(currentPlayer)) return false;
+    // player-restricted events are invisible to anyone not on the list (full DM view always sees them)
+    if (!isDmActive() && ev.visibleTo?.length && !ev.visibleTo.includes(currentPlayer)) return false;
     return true;
   });
 
@@ -808,9 +920,10 @@ function renderTimeline() {
   emp.classList.add('hide');
 
   let lastYear = null;
+  let idx = 0;
 
   for (const {ev, d} of visible) {
-    const hidden = ev.isSecret && !S.unlocked;
+    const hidden = ev.isSecret && !isDmActive();
     const node   = document.createElement('div');
     node.className = 'tl-ev';
 
@@ -837,6 +950,7 @@ function renderTimeline() {
       card.innerHTML = `<div class="locked-row"><span>🔒</span><span>Hidden event — DM eyes only</span></div>`;
     } else {
       card.className = 'ev-card' + (ev.isSecret ? ' secret' : '');
+      card.style.setProperty('--tilt', idx % 2 === 0 ? '-0.4deg' : '0.35deg');
       card.innerHTML = buildCardHTML(ev, d);
       card.querySelector('.ev-edit')?.addEventListener('click', e => { e.stopPropagation(); openEdit(ev.id); });
       card.addEventListener('click', () => openEdit(ev.id));
@@ -844,6 +958,7 @@ function renderTimeline() {
 
     node.appendChild(card);
     tl.appendChild(node);
+    idx++;
   }
 }
 
@@ -858,7 +973,7 @@ function buildCardHTML(ev, d) {
 
   const tags = ev.tags.map(t=>`<span class="ev-tag">${escHtml(t)}</span>`).join('');
   const secBadge = ev.isSecret ? `<span class="ev-secret-badge">🔒 DM Only</span>` : '';
-  const visBadge = (S.unlocked && ev.visibleTo?.length)
+  const visBadge = (isDmActive() && ev.visibleTo?.length)
     ? `<span class="ev-secret-badge" title="Only visible to these players">👥 ${escHtml(ev.visibleTo.join(', '))}</span>` : '';
 
   return `
@@ -1014,7 +1129,7 @@ function openAdd() {
 function openEdit(id) {
   const ev = S.events.find(e=>e.id===id);
   if (!ev) return;
-  if (ev.isSecret && !S.unlocked) { openPw('unlock'); return; }
+  if (ev.isSecret && !isDmActive()) { openPw('unlock'); return; }
 
   editId     = id;
   selTags    = [...ev.tags];
@@ -1184,7 +1299,7 @@ async function handlePw() {
 
   if (pwMode==='unlock') {
     if (await hashPw(pw) === S.passwordHash) {
-      S.unlocked = true; closePw(); render(); toast('DM Mode unlocked','ok');
+      S.unlocked = true; persistAuth(); closePw(); render(); toast('DM Mode unlocked','ok');
     } else {
       err.textContent='Incorrect password.'; err.classList.remove('hide');
       document.getElementById('pw-input').value=''; document.getElementById('pw-input').focus();
@@ -1194,7 +1309,7 @@ async function handlePw() {
     if (pw !== pw2) { err.textContent='Passwords do not match'; err.classList.remove('hide'); return; }
     if (pw.length < 4) { err.textContent='Password must be ≥ 4 characters'; err.classList.remove('hide'); return; }
     S.passwordHash = await hashPw(pw); S.unlocked = true;
-    persist(); closePw(); render(); toast('DM password set','ok');
+    persist(); persistAuth(); closePw(); render(); toast('DM password set','ok');
 
   } else if (pwMode==='change') {
     if (await hashPw(pw) !== S.passwordHash) {
@@ -1208,6 +1323,7 @@ async function handlePw() {
     const p = S.players.find(pl => pl.name === pwTarget);
     if (p && await hashPw(pw) === p.passwordHash) {
       currentPlayer = pwTarget;
+      persistAuth();
       document.getElementById('pw-overlay').classList.add('hide');
       render(); toast(`Playing as ${pwTarget}`,'ok');
     } else {
@@ -1226,6 +1342,7 @@ async function handlePw() {
 
 // ── SETTINGS MODAL ────────────────────────────────────────
 function openCfg() {
+  if (!isDmActive()) { toast('Unlock DM Mode first','bad'); return; }
   document.getElementById('cfg-title').value = S.settings.title||'';
   document.getElementById('cfg-era').value   = S.settings.era||'';
   renderPlayersEd();
@@ -1297,7 +1414,10 @@ function initListeners() {
   document.getElementById('btn-add').onclick = openAdd;
   document.getElementById('btn-cfg').onclick = openCfg;
   document.getElementById('btn-dm').onclick  = () => {
-    if (S.unlocked) { S.unlocked=false; render(); toast('DM Mode locked'); }
+    if (S.unlocked) {
+      S.unlocked = false; dmViewAsPlayer = false; currentPlayer = '';
+      persistAuth(); render(); toast('DM Mode locked');
+    }
     else if (!S.passwordHash) openPw('set');
     else openPw('unlock');
   };
@@ -1306,11 +1426,33 @@ function initListeners() {
   };
   document.getElementById('player-select').onchange = e => {
     const name = e.target.value;
-    if (!name) { currentPlayer = ''; renderTimeline(); return; }
+    // DM previewing as a player can switch freely, no password needed
+    if (S.unlocked && dmViewAsPlayer) { currentPlayer = name; renderTimeline(); return; }
+    if (!name) { currentPlayer = ''; persistAuth(); renderTimeline(); return; }
     const p = S.players.find(pl => pl.name === name);
     if (p && p.passwordHash) { openPw('player-unlock', name); return; }
-    currentPlayer = name; renderTimeline();
+    currentPlayer = name; persistAuth(); renderTimeline();
   };
+  document.getElementById('view-as-toggle').onchange = e => {
+    dmViewAsPlayer = e.target.checked;
+    currentPlayer = '';
+    render();
+  };
+
+  // dragon menu + tag bar toggles
+  document.getElementById('btn-menu').onclick = e => {
+    e.stopPropagation();
+    document.getElementById('dragon-menu').classList.toggle('hide');
+  };
+  document.getElementById('btn-tags').onclick = () => {
+    document.getElementById('tag-bar').classList.toggle('hide');
+  };
+  document.addEventListener('click', e => {
+    const menu = document.getElementById('dragon-menu');
+    if (!menu.classList.contains('hide') && !e.target.closest('.menu-wrap')) {
+      menu.classList.add('hide');
+    }
+  });
 
   // event modal
   document.getElementById('ev-close').onclick  = closeEvModal;
@@ -1402,7 +1544,10 @@ function initListeners() {
 
   // global keyboard
   document.addEventListener('keydown', e => {
-    if (e.key==='Escape') document.querySelectorAll('.overlay:not(.hide)').forEach(o=>o.classList.add('hide'));
+    if (e.key==='Escape') {
+      document.querySelectorAll('.overlay:not(.hide)').forEach(o=>o.classList.add('hide'));
+      document.getElementById('dragon-menu').classList.add('hide');
+    }
     if (e.key==='n' && !e.ctrlKey && !e.metaKey && !e.altKey &&
         !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) openAdd();
   });
@@ -1411,6 +1556,7 @@ function initListeners() {
 // ── INIT ──────────────────────────────────────────────────
 (async function init() {
   hydrate();
+  hydrateAuth();
   initListeners();
   const isFirstVisit = localStorage.getItem('ftl') === null;
   if (isFirstVisit) await loadRemote(false);
