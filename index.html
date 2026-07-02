@@ -213,6 +213,23 @@
       transition: transform .18s;
     }
 
+    .tl-gap {
+      position: relative;
+      margin: 4px 0 18px;
+      text-align: center;
+      font-style: italic;
+      font-size: .78rem;
+      color: var(--text-d);
+    }
+    .tl-gap-mark {
+      position: absolute;
+      left: -22px; top: 50%;
+      width: 14px; height: 22px;
+      transform: translate(-50%,-50%);
+      color: var(--tl-line);
+    }
+    .tl-gap-mark svg { width: 100%; height: 100%; display: block; }
+
     .ev-card {
       background: linear-gradient(165deg, var(--bg-card), #e6d5a3);
       border: 1px solid var(--border);
@@ -432,6 +449,12 @@
   <div class="hrow">
     <h1 id="site-title">⚔ Campaign Timeline</h1>
     <div class="h-spacer"></div>
+    <button class="icon-btn" id="btn-gaps" title="Show gaps in time">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="10.5" cy="10.5" r="6.5"/>
+        <path d="M15.5 15.5 21 21"/>
+      </svg>
+    </button>
     <button class="icon-btn" id="btn-tags" title="Filter by Tag">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
         <path d="M12.5 3H4a1 1 0 0 0-1 1v8.5a1 1 0 0 0 .29.71l9.5 9.5a1 1 0 0 0 1.42 0l7.79-7.79a1 1 0 0 0 0-1.42l-9.5-9.5A1 1 0 0 0 12.5 3Z"/>
@@ -672,6 +695,7 @@
 // ── CONSTANTS ──────────────────────────────────────────────
 const COLORS = ['#c9a84c','#e07b39','#c0392b','#8e44ad','#2980b9',
                 '#27ae60','#e91e63','#00bcd4','#9e9e9e','#ffffff'];
+const GAP_YEARS = 20; // consecutive events further apart than this get a "years pass" break marker
 
 // ── STATE ─────────────────────────────────────────────────
 let S = {
@@ -694,6 +718,7 @@ let pwMode      = 'unlock';
 let pwTarget    = null;    // player name when pwMode is player-*
 let currentPlayer   = '';  // authenticated player identity (or DM preview identity)
 let dmViewAsPlayer  = false; // DM's own "preview as player" toggle — resets each reload
+let showGaps        = false; // magnifying-glass toggle — mark large time jumps between events
 
 // Whether the viewer currently has full DM visibility (not previewing as a player).
 function isDmActive() { return S.unlocked && !dmViewAsPlayer; }
@@ -911,8 +936,15 @@ function renderTimeline() {
 
   let lastYear = null;
   let idx = 0;
+  let prevD = null;
 
   for (const {ev, d} of visible) {
+    if (showGaps && prevD?.ok && d.ok) {
+      const gapYears = Math.round(sortVal(d) - sortVal(prevD));
+      if (gapYears >= GAP_YEARS) tl.appendChild(buildGapNode(gapYears));
+    }
+    prevD = d;
+
     const hidden = ev.isSecret && !isDmActive();
     const node   = document.createElement('div');
     node.className = 'tl-ev';
@@ -950,6 +982,21 @@ function renderTimeline() {
     tl.appendChild(node);
     idx++;
   }
+}
+
+function buildGapNode(years) {
+  const g = document.createElement('div');
+  g.className = 'tl-gap';
+  g.innerHTML = `
+    <div class="tl-gap-mark">
+      <svg viewBox="0 0 14 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 2 L10 20"/>
+        <path d="M1 2 L7 20"/>
+      </svg>
+    </div>
+    <span>⋯ ${years.toLocaleString()} years pass ⋯</span>
+  `;
+  return g;
 }
 
 function buildCardHTML(ev, d) {
@@ -1436,6 +1483,11 @@ function initListeners() {
   };
   document.getElementById('btn-tags').onclick = () => {
     document.getElementById('tag-bar').classList.toggle('hide');
+  };
+  document.getElementById('btn-gaps').onclick = () => {
+    showGaps = !showGaps;
+    document.getElementById('btn-gaps').classList.toggle('active', showGaps);
+    renderTimeline();
   };
   document.addEventListener('click', e => {
     const menu = document.getElementById('dragon-menu');
